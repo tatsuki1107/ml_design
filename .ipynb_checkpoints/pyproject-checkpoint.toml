@@ -5,7 +5,7 @@ description = ""
 authors = ["tatsuki1107 <tatsuki11070522@icloud.com>"]
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = "^3.9"
 torch = "^1.9.0"
 scikit-learn = "^0.24.2"
 numpy = "^1.19.5"
