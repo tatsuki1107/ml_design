@@ -4,7 +4,7 @@ from typing import Tuple
 from torch import nn, FloatTensor
 
 @dataclass(unsafe_hash=True)
-class MLPScoreFunc(nn.model):
+class MLPScoreFunc(nn.Module):
     """多層パーセプトロンによるスコアリング関数.
     パラメータ
     ----------
@@ -25,7 +25,7 @@ class MLPScoreFunc(nn.model):
         self.hidden_layers.append(
             nn.Linear(self.input_size, self.hidden_layer_sizes[0])
         )
-        for hin, hout in zip(self.hidden_layer_sizes, self.hidden_layer_sizes[:1]):
+        for hin, hout in zip(self.hidden_layer_sizes, self.hidden_layer_sizes[1:]):
             self.hidden_layers.append(nn.Linear(hin, hout))
         self.output = nn.Linear(self.hidden_layer_sizes[-1], 1)
     
