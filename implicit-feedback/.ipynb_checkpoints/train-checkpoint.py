@@ -1,11 +1,13 @@
 from typing import List, Optional
 from pytorchltr.datasets.svmrank.svmrank import SVMRankDataset
+import torch
 from torch import nn, optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from evaluate import evaluate_test_performance
 from loss import listwise_loss
 from utils import convert_rel_to_gamma, convert_gamma_to_implicit
+from model import MLPScoreFunc, LinearRegression
 
 
 def train_ranker(
@@ -88,4 +90,33 @@ def train_ranker(
         ndcg_score_list.append(ndcg_score)
     
     return ndcg_score_list
-        
+
+
+def parallel_train(
+    train: SVMRankDataset,
+    test: SVMRankDataset,
+    estimator: str,
+    learning_rate: float,
+    batch_size: int = 32,
+    n_epochs: int = 30,
+):
+    
+    torch.manual_seed(12345)
+    
+    score_fn = LinearRegression(
+        input_size=train[0].features.shape[1]
+    )
+    optimizer = Adam(score_fn.parameters(), lr=learning_rate)
+    
+    ndcg_score_list = train_ranker(
+            score_fn=score_fn,
+            optimizer=optimizer,
+            estimator=estimator,
+            train=train,
+            test=test,
+            batch_size=batch_size,
+            pow_true=1.0,
+            n_epochs=n_epochs,
+        )
+    
+    return ndcg_score_list
